@@ -1,0 +1,41 @@
+clc
+clear
+format short
+
+%%Phase 1: input parameters
+C=[2 3 4 7];
+A=[2 3 -1 4; 1 -2 6 -7];
+b=[8; -3];
+
+%%Phase 2: no. of constraints and variables
+m= size(A,1);
+n=size(A,2);
+
+%%Phase 3: computing nCm BFS
+nv=nchoosek(n,m);
+t= nchoosek(1:n,m);
+
+%%Phase 4: basic solution
+sol=[];
+if n>=m
+    for i=1:nv
+        y=zeros(n,1);
+        x=A(:,t(i,:))\b;
+        %%checking feasibility condition
+        if all(x>=0 & x~=inf &x~= -inf)
+            y(t(i,:))=x;
+            sol=[sol y];
+        end
+    end
+else error('Eqns are larger than variables')
+end
+%% objective func
+Z= C* sol;
+%%finding optimal value
+[Zmax, Zind]=max(Z);
+BFS= sol(:, Zind);
+
+%%Print solution
+optval=[BFS' Zmax];
+OPTIMAL_BFS= array2table(optval);
+OPTIMAL_BFS.Properties.VariableNames(1:size(OPTIMAL_BFS, 2))={'x_1','x_2', 'x_3','x_4','value_Z'}
